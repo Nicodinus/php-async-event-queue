@@ -10,16 +10,16 @@ use function Amp\call;
 
 
 /**
- * @param EventSupplierInterface $listener
+ * @param EventSubscriberInterface $subscriber
  * @param callable $callable callable(object $event)
  * @param callable|null $errorHandler callable(Throwable $throwable, ?object $event = null)
  *
  * @return void
  */
-function listenEvent(EventSupplierInterface $listener, callable $callable, ?callable $errorHandler = null): void
+function listenEvent(EventSubscriberInterface $subscriber, callable $callable, ?callable $errorHandler = null): void
 {
     asyncCall(static function () use (
-        $listener,
+        $subscriber,
         $callable,
         $errorHandler
     ) {
@@ -28,9 +28,9 @@ function listenEvent(EventSupplierInterface $listener, callable $callable, ?call
 
         try {
 
-            while (!$listener->isReleased()) {
+            while (!$subscriber->isReleased()) {
 
-                $event = yield $listener->await();
+                $event = yield $subscriber->await();
                 if (!$event) {
                     continue;
                 }
@@ -51,22 +51,22 @@ function listenEvent(EventSupplierInterface $listener, callable $callable, ?call
 
         }
 
-        $listener->release();
+        $subscriber->release();
 
     });
 }
 
 /**
- * @param EventProviderInterface $eventProvider
+ * @param EventDispatcherInterface $eventDispatcher
  * @param string $eventName
  * @param callable $callable callable(object $event)
  * @param callable|null $errorHandler callable(Throwable $throwable, ?object $event = null)
  *
- * @return EventSupplierInterface
+ * @return EventSubscriberInterface
  */
-function listenProvidedEvent(EventProviderInterface $eventProvider, string $eventName, callable $callable, ?callable $errorHandler = null): EventSupplierInterface
+function subscribeEvent(EventDispatcherInterface $eventDispatcher, string $eventName, callable $callable, ?callable $errorHandler = null): EventSubscriberInterface
 {
-    $listener = $eventProvider->getSupplier($eventName);
+    $listener = $eventDispatcher->subscribe($eventName);
 
     listenEvent($listener, $callable, $errorHandler);
 

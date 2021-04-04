@@ -8,7 +8,7 @@ use Amp\Promise;
 use SplObjectStorage;
 use function Amp\call;
 
-class EventProvider implements EventProviderInterface
+class EventDispatcher implements EventDispatcherInterface
 {
     /** @var string */
     public const DEFAULT_CHANNEL_NAME = '__default__';
@@ -18,7 +18,7 @@ class EventProvider implements EventProviderInterface
 
     //
 
-    /** @var SplObjectStorage<EventSupplier>[] */
+    /** @var SplObjectStorage<EventSubscriber>[] */
     private array $registry;
 
     /** @var bool */
@@ -76,7 +76,7 @@ class EventProvider implements EventProviderInterface
 
         foreach ($this->registry as $storage) {
 
-            /** @var EventSupplier $eventSupplier */
+            /** @var EventSubscriber $eventSupplier */
             foreach ($storage as $eventSupplier) {
                 $eventSupplier->release();
             }
@@ -89,7 +89,7 @@ class EventProvider implements EventProviderInterface
     /**
      * @inheritDoc
      */
-    public function getSupplier(?string $channel = self::DEFAULT_CHANNEL_NAME): ?EventSupplierInterface
+    public function subscribe(?string $channel = self::DEFAULT_CHANNEL_NAME): ?EventSubscriberInterface
     {
         if ($this->isReleased()) {
             return null;
@@ -99,7 +99,7 @@ class EventProvider implements EventProviderInterface
             $channel = self::BROADCAST_CHANNEL_NAME;
         }
 
-        $eventSupplier = new EventSupplier(function (EventSupplier $eventSupplier) {
+        $eventSupplier = new EventSubscriber(function (EventSubscriber $eventSupplier) {
 
             if ($this->isReleased()) {
                 return;
@@ -177,7 +177,7 @@ class EventProvider implements EventProviderInterface
                     break;
                 }
 
-                /** @var EventSupplier $eventSupplier */
+                /** @var EventSubscriber $eventSupplier */
                 foreach ($this->registry[$currentChannel] as $eventSupplier) {
 
                     if ($this->isReleased()) {

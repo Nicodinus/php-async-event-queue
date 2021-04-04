@@ -9,21 +9,21 @@ use Amp\Promise;
 use Amp\PHPUnit\AsyncTestCase;
 use Generator;
 use Nicodinus\PhpAsync\EventQueue\Event;
-use Nicodinus\PhpAsync\EventQueue\EventProvider;
+use Nicodinus\PhpAsync\EventQueue\EventDispatcher;
 use PHPUnit\Framework\AssertionFailedError;
 use function Amp\asyncCall;
 use function Amp\delay;
 use function Nicodinus\PhpAsync\EventQueue\listenEvent;
-use function Nicodinus\PhpAsync\EventQueue\listenProvidedEvent;
+use function Nicodinus\PhpAsync\EventQueue\subscribeEvent;
 
 class Test extends AsyncTestCase
 {
     /**
-     * @return EventProvider
+     * @return EventDispatcher
      */
     protected function createEventProvider()
     {
-        return new EventProvider();
+        return new EventDispatcher();
     }
 
     /**
@@ -33,7 +33,7 @@ class Test extends AsyncTestCase
     {
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier();
+        $listener = $eventProvider->subscribe();
 
         $event = new Event();
 
@@ -68,7 +68,7 @@ class Test extends AsyncTestCase
 
             $defer = new Deferred();
 
-            $listener = $eventProvider->getSupplier();
+            $listener = $eventProvider->subscribe();
             listenEvent($listener, function (Event $event) use ($listener, $defer) {
 
                 $defer->resolve($event);
@@ -102,7 +102,7 @@ class Test extends AsyncTestCase
 
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier($channelName);
+        $listener = $eventProvider->subscribe($channelName);
 
         $event = new Event();
 
@@ -131,7 +131,7 @@ class Test extends AsyncTestCase
     {
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier(EventProvider::BROADCAST_CHANNEL_NAME);
+        $listener = $eventProvider->subscribe(EventDispatcher::BROADCAST_CHANNEL_NAME);
 
         $event = new Event();
 
@@ -160,7 +160,7 @@ class Test extends AsyncTestCase
     {
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier();
+        $listener = $eventProvider->subscribe();
 
         $event = new Event();
 
@@ -170,7 +170,7 @@ class Test extends AsyncTestCase
 
             yield delay(0);
 
-            yield $eventProvider->queue($event, EventProvider::BROADCAST_CHANNEL_NAME);
+            yield $eventProvider->queue($event, EventDispatcher::BROADCAST_CHANNEL_NAME);
 
         });
 
@@ -189,7 +189,7 @@ class Test extends AsyncTestCase
     {
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier("channel1");
+        $listener = $eventProvider->subscribe("channel1");
 
         $event = new Event();
 
@@ -222,7 +222,7 @@ class Test extends AsyncTestCase
 
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier($channelName);
+        $listener = $eventProvider->subscribe($channelName);
 
         $event = new Event();
 
@@ -268,7 +268,7 @@ class Test extends AsyncTestCase
     {
         $eventProvider = $this->createEventProvider();
 
-        $listener = $eventProvider->getSupplier(EventProvider::BROADCAST_CHANNEL_NAME);
+        $listener = $eventProvider->subscribe(EventDispatcher::BROADCAST_CHANNEL_NAME);
         $listener->release();
 
         $event = new Event();
@@ -300,7 +300,7 @@ class Test extends AsyncTestCase
 
         $defer = new Deferred();
 
-        $listener = listenProvidedEvent($eventProvider, "event1", function (Event $event) use (&$defer) {
+        $listener = subscribeEvent($eventProvider, "event1", function (Event $event) use (&$defer) {
 
             $defer->resolve($event);
 
@@ -329,7 +329,7 @@ class Test extends AsyncTestCase
 
         $defer = new Deferred();
 
-        $listener = listenProvidedEvent($eventProvider, "event1", function (Event $event) use (&$defer) {
+        $listener = subscribeEvent($eventProvider, "event1", function (Event $event) use (&$defer) {
 
             $defer->resolve($event);
 
