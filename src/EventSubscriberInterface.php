@@ -6,7 +6,7 @@ namespace Nicodinus\PhpAsync\EventQueue;
 
 use Amp\Promise;
 
-interface EventSupplierInterface
+interface EventSubscriberInterface
 {
     /**
      * @return bool

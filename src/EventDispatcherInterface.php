@@ -6,7 +6,7 @@ namespace Nicodinus\PhpAsync\EventQueue;
 
 use Amp\Promise;
 
-interface EventProviderInterface
+interface EventDispatcherInterface
 {
     /**
      * @return bool
@@ -21,9 +21,9 @@ interface EventProviderInterface
     /**
      * @param string|null $channel When null -> listen all channels
      *
-     * @return EventSupplierInterface|null
+     * @return EventSubscriberInterface|null
      */
-    public function getSupplier(?string $channel = null): ?EventSupplierInterface;
+    public function subscribe(?string $channel = null): ?EventSubscriberInterface;
 
     /**
      * @param object $event

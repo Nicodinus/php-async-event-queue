@@ -8,7 +8,7 @@ use Amp\Emitter;
 use Amp\Promise;
 use function Amp\call;
 
-class EventSupplier implements EventSupplierInterface
+class EventSubscriber implements EventSubscriberInterface
 {
     /** @var string|null */
     private ?string $channel;
