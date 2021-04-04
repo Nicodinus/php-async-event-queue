@@ -1,0 +1,37 @@
+{
+  "name": "nicodinus/php-async-event-queue",
+  "homepage": "https://github.com/Nicodinus/php-async-event-queue",
+  "description": "",
+  "type": "lib",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Nicodinus",
+      "email": "nicodinus@yandex.ru"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Nicodinus\\PhpAsync\\EventQueue\\": "src"
+    },
+    "files": [
+      "src/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Nicodinus\\PhpAsync\\EventQueue\\Tests\\": "tests"
+    }
+  },
+  "require": {
+    "php": ">=7.4",
+    "amphp/amp": "^2.5"
+  },
+  "require-dev": {
+    "larapack/dd": "^1.1",
+    "amphp/phpunit-util": "^1.4",
+    "phpunit/phpunit": "^9.4"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
